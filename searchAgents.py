@@ -296,6 +296,8 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
+        return (self.startingPosition, frozenset())
+
         util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
@@ -303,6 +305,9 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+        position, visitedCorners = state
+        return len(visitedCorners) == 4  # Se alcanza la meta cuando todas las esquinas han sido visitadas
+
         util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
@@ -324,8 +329,23 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
+            currentPosition, visitedCorners = state  # 🔹 Definir dentro del for, aunque no es lo ideal
+            
+            x, y = currentPosition  # 🔹 Obtener coordenadas de Pacman
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                nextPosition = (nextx, nexty)
+                newVisitedCorners = visitedCorners
+
+                # Si llegamos a una esquina y no ha sido visitada, la añadimos al conjunto
+                if nextPosition in self.corners and nextPosition not in visitedCorners:
+                    newVisitedCorners = visitedCorners | {nextPosition}
+
+                successors.append(((nextPosition, newVisitedCorners), action, 1))  # Costo 1 por movimiento
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
