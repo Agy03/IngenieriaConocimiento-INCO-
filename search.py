@@ -22,6 +22,8 @@ from game import Directions
 from typing import List
 from util import Stack 
 from util import Queue
+from util import PriorityQueue
+
 
 class SearchProblem:
     """
@@ -153,6 +155,33 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    from util import PriorityQueue
+    # Cola de prioridad para la frontera de búsqueda
+    fringe = PriorityQueue()
+    # Conjunto de nodos visitados con su menor costo acumulado
+    visited = {}
+
+    # Inicializar con el estado inicial, costo 0 y camino vacío
+    fringe.push((problem.getStartState(), [], 0), 0)
+
+    while not fringe.isEmpty():
+        state, path, cost = fringe.pop()  # Sacamos el nodo con menor costo
+
+        # Si encontramos la meta, devolvemos el camino
+        if problem.isGoalState(state):
+            return path
+
+        # Si el estado no ha sido visitado o se encontró un menor costo, expandimos
+        if state not in visited or cost < visited[state]:
+            visited[state] = cost  # Guardamos el menor costo para este estado
+
+            # Expandimos el nodo obteniendo sus sucesores
+            for successor, action, stepCost in problem.getSuccessors(state):
+                newCost = cost + stepCost  # Sumar el costo acumulado
+                newPath = path + [action]  # Construir el nuevo camino
+                fringe.push((successor, newPath, newCost), newCost)  # Agregar a la cola de prioridad
+
+    return []  # Si no hay solución, devolvemos una lista vacía
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None) -> float:
