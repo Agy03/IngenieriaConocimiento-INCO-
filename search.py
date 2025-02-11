@@ -21,7 +21,7 @@ import util
 from game import Directions
 from typing import List
 from util import Stack 
-
+from util import Queue
 
 class SearchProblem:
     """
@@ -123,6 +123,31 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
+    # Cola para la frontera de búsqueda
+    fringe = Queue()
+    # Conjunto de nodos visitados
+    visited = set()
+    
+    # Cada elemento en la cola es una tupla (estado, camino hasta ese estado)
+    fringe.push((problem.getStartState(), []))
+
+    while not fringe.isEmpty():
+        state, path = fringe.pop()  # Sacamos el nodo más antiguo
+
+        if problem.isGoalState(state):
+            return path  # Si es la meta, retornamos el camino
+
+        if state not in visited:
+            visited.add(state)  # Marcamos el estado como visitado
+
+            # Expandimos el nodo obteniendo sus sucesores
+            for successor, action, stepCost in problem.getSuccessors(state):
+                if successor not in visited:
+                    new_path = path + [action]  # Guardamos el nuevo camino
+                    fringe.push((successor, new_path))  # Lo añadimos a la cola
+
+    return []  # Si no hay solución, devolvemos una lista vacía
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
