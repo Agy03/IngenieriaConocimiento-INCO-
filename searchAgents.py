@@ -383,34 +383,32 @@ def cornersHeuristic(state: Any, problem: CornersProblem) -> int:
     shortest path from the state to a goal of the problem; i.e., it must be
     admissible.
     """
-    corners = problem.corners  # List of all corner coordinates.
-    walls = problem.walls      # The maze's walls (provided as a Grid).
+    corners = problem.corners # These are the corner coordinates
+    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    # Unpack the state (assumes state is (current_position, visited_corners))
-    current_position, visited_corners = state
+    "*** YOUR CODE HERE ***"
+    from util import manhattanDistance
+    position, visitedCorners = state  # Extract Pacman's position and visited corners
+    remainingCorners = [corner for corner in problem.corners if corner not in visitedCorners]
 
-    # Determine which corners have not been visited yet.
-    unvisited = [corner for corner in corners if corner not in visited_corners]
+    if not remainingCorners:
+        return 0  # If all corners are visited, return 0 (goal reached)
 
-    # If all corners have been visited, the heuristic is 0.
-    if not unvisited:
-        return 0
-
-    # Use a greedy approach: from the current position, repeatedly go to the nearest
-    # unvisited corner (using Manhattan distance), accumulate the total distance.
+    # Start at Pacman's current position
     total_distance = 0
-    position = current_position
+    current_position = position
 
-    while unvisited:
-        # Compute Manhattan distances from the current position to each unvisited corner.
-        distances = [(abs(position[0] - corner[0]) + abs(position[1] - corner[1]), corner)
-                     for corner in unvisited]
-        min_distance, closest_corner = min(distances)
-        total_distance += min_distance
-        position = closest_corner
-        unvisited.remove(closest_corner)
+    # Greedy approach: Always go to the nearest corner first
+    while remainingCorners:
+        # Find the nearest corner
+        closest_corner = min(remainingCorners, key=lambda corner: manhattanDistance(current_position, corner))
+        total_distance += manhattanDistance(current_position, closest_corner)
+        current_position = closest_corner  # Move Pacman to that corner
+        remainingCorners.remove(closest_corner)  # Mark it as visited
 
-    return total_distance
+    return total_distance  # Return the total estimated distance
+
+    return 0 # Default to trivial solution
 
 
 
