@@ -20,9 +20,6 @@ Pacman agents (in searchAgents.py).
 import util
 from game import Directions
 from typing import List
-from util import Stack 
-from util import Queue
-from util import PriorityQueue
 
 
 class SearchProblem:
@@ -94,94 +91,82 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    """Busca el camino al nodo objetivo usando búsqueda en profundidad (DFS)."""
+    from util import Stack 
    
-    # Pila para la frontera de búsqueda
-    fringe = Stack()
-    # Conjunto de nodos visitados
-    visited = set()
+    fringe = Stack() # Stack for the search frontier
+    visited = set() # Set of visitied nodes
     
-    # Cada elemento en la pila es una tupla (estado, camino hasta ese estado)
+    # Each element in the stack is a tuple (state, path to that state)
     fringe.push((problem.getStartState(), []))
 
     while not fringe.isEmpty():
-        state, path = fringe.pop()  # Sacamos el nodo más reciente
+        state, path = fringe.pop()  # Remove the most recent node
 
         if problem.isGoalState(state):
-            return path  # Si es la meta, retornamos el camino
+            return path  # If it is the goal, return the path
 
         if state not in visited:
-            visited.add(state)  # Marcamos el estado como visitado
+            visited.add(state)  # Mark the state as visited
 
-            # Expandimos el nodo obteniendo sus sucesores
+            # Expand the node by getting its successors
             for successor, action, stepCost in problem.getSuccessors(state):
                 if successor not in visited:
-                    new_path = path + [action]  # Guardamos el nuevo camino
-                    fringe.push((successor, new_path))  # Lo añadimos a la pila
+                    new_path = path + [action]  # Store the new path
+                    fringe.push((successor, new_path)) # Add it to the stack
 
-    return []  # Si no hay solución, devolvemos una lista vacía
+    return []  # If no solution is found, return an empty list
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    from util import Queue
 
-    # Cola para la frontera de búsqueda
-    fringe = Queue()
-    # Conjunto de nodos visitados
-    visited = set()
-    
-    # Cada elemento en la cola es una tupla (estado, camino hasta ese estado)
-    fringe.push((problem.getStartState(), []))
+    fringe = Queue()  # Queue to store states
+    visited = set()  # Keep track of visited nodes
+    fringe.push((problem.getStartState(), []))  # Start state
 
     while not fringe.isEmpty():
-        state, path = fringe.pop()  # Sacamos el nodo más antiguo
+        state, path = fringe.pop()  # Take first added state (FIFO)
 
         if problem.isGoalState(state):
-            return path  # Si es la meta, retornamos el camino
+            return path  # Goal reached, return path
 
         if state not in visited:
-            visited.add(state)  # Marcamos el estado como visitado
+            visited.add(state)  # Mark as visited
 
-            # Expandimos el nodo obteniendo sus sucesores
-            for successor, action, stepCost in problem.getSuccessors(state):
-                if successor not in visited:
-                    new_path = path + [action]  # Guardamos el nuevo camino
-                    fringe.push((successor, new_path))  # Lo añadimos a la cola
+            for nextState, action, cost in problem.getSuccessors(state):
+                if nextState not in visited:
+                    fringe.push((nextState, path + [action]))  # Add new state
 
-    return []  # Si no hay solución, devolvemos una lista vacía
+    return []  # No solution found
+    
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
-    # Cola de prioridad para la frontera de búsqueda
-    fringe = PriorityQueue()
-    # Conjunto de nodos visitados con su menor costo acumulado
-    visited = {}
-
-    # Inicializar con el estado inicial, costo 0 y camino vacío
-    fringe.push((problem.getStartState(), [], 0), 0)
+    fringe = PriorityQueue()  # Priority queue to store states
+    visited = {}  # Dictionary to track the lowest cost to each state
+    fringe.push((problem.getStartState(), [], 0), 0)  # Start state (position, path, cost)
 
     while not fringe.isEmpty():
-        state, path, cost = fringe.pop()  # Sacamos el nodo con menor costo
+        state, path, cost = fringe.pop()  # Take the state with the lowest cost
 
-        # Si encontramos la meta, devolvemos el camino
         if problem.isGoalState(state):
-            return path
+            return path  # Goal reached, return the path
 
-        # Si el estado no ha sido visitado o se encontró un menor costo, expandimos
-        if state not in visited or cost < visited[state]:
-            visited[state] = cost  # Guardamos el menor costo para este estado
+        if state not in visited or cost < visited[state]:  # Expand if a cheaper path is found
+            visited[state] = cost  # Store the lowest cost for this state
 
-            # Expandimos el nodo obteniendo sus sucesores
-            for successor, action, stepCost in problem.getSuccessors(state):
-                newCost = cost + stepCost  # Sumar el costo acumulado
-                newPath = path + [action]  # Construir el nuevo camino
-                fringe.push((successor, newPath, newCost), newCost)  # Agregar a la cola de prioridad
+            for nextState, action, stepCost in problem.getSuccessors(state):
+                newCost = cost + stepCost  # Update total cost
+                newPath = path + [action]  # Update path
+                fringe.push((nextState, newPath, newCost), newCost)  # Add new state with priority
 
-    return []  # Si no hay solución, devolvemos una lista vacía
+    return []  # No solution found
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None) -> float:

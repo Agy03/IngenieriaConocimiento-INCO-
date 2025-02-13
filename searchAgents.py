@@ -285,9 +285,12 @@ class CornersProblem(search.SearchProblem):
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        
+        # Check if there is food in each corner (++ an extra warning just in case)
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
+
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
 
     def getStartState(self):
@@ -296,8 +299,7 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return (self.startingPosition, frozenset())
-
+        return (self.startingPosition, frozenset())  # Pacman starts with no corners visited
         util.raiseNotDefined()
 
     def isGoalState(self, state: Any):
@@ -305,8 +307,8 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        position, visitedCorners = state
-        return len(visitedCorners) == 4  # Se alcanza la meta cuando todas las esquinas han sido visitadas
+        position, visitedCorners = state  # Extract Pacman's position and visited corners
+        return len(visitedCorners) == 4  # Goal reached when all four corners are visited
 
         util.raiseNotDefined()
 
@@ -329,22 +331,26 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
-            currentPosition, visitedCorners = state  # 🔹 Definir dentro del for, aunque no es lo ideal
+
+            # Extract the current position and visited corners from the state
+            currentPosition, visitedCorners = state  
             
-            x, y = currentPosition  # 🔹 Obtener coordenadas de Pacman
+            # Determine the new position based on the action
+            x, y = currentPosition
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            hitsWall = self.walls[nextx][nexty]
+            hitsWall = self.walls[nextx][nexty]  # Check if the move hits a wall
 
-            if not hitsWall:
+            if not hitsWall:  # Only continue if the move is valid
                 nextPosition = (nextx, nexty)
                 newVisitedCorners = visitedCorners
 
-                # Si llegamos a una esquina y no ha sido visitada, la añadimos al conjunto
+                # If Pacman reaches an unvisited corner, mark it as visited
                 if nextPosition in self.corners and nextPosition not in visitedCorners:
-                    newVisitedCorners = visitedCorners | {nextPosition}
+                    newVisitedCorners = visitedCorners | {nextPosition}  # Add new corner to visited set
 
-                successors.append(((nextPosition, newVisitedCorners), action, 1))  # Costo 1 por movimiento
+                # Add the new state to the list of successors
+                successors.append(((nextPosition, newVisitedCorners), action, 1))  # Cost is always 1
 
 
         self._expanded += 1 # DO NOT CHANGE
