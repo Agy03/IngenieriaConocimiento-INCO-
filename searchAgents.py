@@ -498,9 +498,59 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
+    
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    foodList = foodGrid.asList() 
+
+    if not foodList:
+        return 0  # No food left, heuristic is 0
+
+    # Include Pacman's position in the list of points
+    points = [position] + foodList
+
+    # Calculate the minimum spanning tree (MST) using Prim's algorithm
+    def prim_mst(points):
+        mst_cost = 0
+        visited = set()
+        # Start with the first point
+        visited.add(points[0])
+
+        # Initialize the list of edges (distance, current, neighbor)
+        edges = []
+
+        # Add all edges from the first point to the heap
+        for neighbor in points[1:]:
+            distance = abs(points[0][0] - neighbor[0]) + abs(points[0][1] - neighbor[1])
+            edges.append((distance, points[0], neighbor))
+
+        # While there are unvisited points
+        while len(visited) < len(points):
+            # Find the edge with the smallest distance
+            min_edge = None
+            for edge in edges:
+                if edge[2] not in visited and (min_edge is None or edge[0] < min_edge[0]):
+                    min_edge = edge
+
+            if min_edge is None:
+                break  # No more edges to process
+
+            # Add the new point to the visited set
+            visited.add(min_edge[2])
+            mst_cost += min_edge[0]
+
+            # Add new edges from the newly visited point
+            for neighbor in points:
+                if neighbor not in visited:
+                    distance = abs(min_edge[2][0] - neighbor[0]) + abs(min_edge[2][1] - neighbor[1])
+                    edges.append((distance, min_edge[2], neighbor))
+
+        return mst_cost
+
+    # Calculate the MST cost
+    mst_cost = prim_mst(points)
+
+    # Return of the Minium spannig tree
+    return mst_cost
 
 
 class ClosestDotSearchAgent(SearchAgent):

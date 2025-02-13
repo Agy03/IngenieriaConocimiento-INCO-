@@ -177,38 +177,47 @@ def nullHeuristic(state, problem=None) -> float:
     return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    """Finds the optimal path to the goal using A* Search (A*)."""
+    """
+    Search the node that has the lowest combined cost and heuristic first.
+    f(n) = g(n) + h(n)
+    where g(n) is the cost to reach the node and h(n) is the heuristic estimate.
+    """
+    from util import PriorityQueue
 
-
-def aStarSearch(problem, heuristic=nullHeuristic):
-    from util import PriorityQueue  # Import Priority Queue (lowest cost first)
-    fringe = PriorityQueue()  # Priority queue to store states
-    visited = {}  # Dictionary to track the best cost to each state
-    start = problem.getStartState()
+    # Initialize the frontier using a PriorityQueue.
+    # Each element is a tuple: (state, path to state, accumulated cost)
+    fringe = PriorityQueue()
     
-    # Push the start state with priority (cost + heuristic)
-    fringe.push((start, [], 0), 0 + heuristic(start, problem))  
-
+    # Dictionary to track the best cost (g(n)) found so far for each state.
+    visited = {}
+    
+    start = problem.getStartState()
+    start_cost = 0
+    
+    # Push the start state into the queue with priority = g(n) + h(n)
+    fringe.push((start, [], start_cost), start_cost + heuristic(start, problem))
+    
     while not fringe.isEmpty():
-        state, path, cost = fringe.pop()  # Take the state with the lowest f(n) = g(n) + h(n)
-
+        state, path, cost = fringe.pop()
+        
+        # If the current state is the goal, return the path to it.
         if problem.isGoalState(state):
-            return path  # Goal reached, return the path
-
-        if state not in visited or cost < visited[state]:  # Expand if a cheaper path is found
-            visited[state] = cost  # Save the best cost for this state
-
+            return path
+        
+        # Only expand the node if this path is cheaper than any previous one found for this state.
+        if state not in visited or cost < visited[state]:
+            visited[state] = cost
+            
+            # Expand the current node by iterating over its successors.
             for nextState, action, stepCost in problem.getSuccessors(state):
-                newCost = cost + stepCost  # Update path cost g(n)
-                priority = newCost + heuristic(nextState, problem)  # A* formula f(n) = g(n) + h(n)
-                newPath = path + [action]  # Update path
-                fringe.push((nextState, newPath, newCost), priority)  # Add to queue with priority
+                newCost = cost + stepCost               # g(n): cost to reach the successor
+                newPath = path + [action]               # update the path with the new action
+                priority = newCost + heuristic(nextState, problem)  # f(n): total estimated cost
+                
+                fringe.push((nextState, newPath, newCost), priority)
+    
+    return []
 
-    return []  # No solution found
-
-    util.raiseNotDefined()
 
 # Abbreviations
 bfs = breadthFirstSearch
