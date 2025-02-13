@@ -388,6 +388,27 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    from util import manhattanDistance
+    position, visitedCorners = state  # Extract Pacman's position and visited corners
+    remainingCorners = [corner for corner in problem.corners if corner not in visitedCorners]
+
+    if not remainingCorners:
+        return 0  # If all corners are visited, return 0 (goal reached)
+
+    # Start at Pacman's current position
+    total_distance = 0
+    current_position = position
+
+    # Greedy approach: Always go to the nearest corner first
+    while remainingCorners:
+        # Find the nearest corner
+        closest_corner = min(remainingCorners, key=lambda corner: manhattanDistance(current_position, corner))
+        total_distance += manhattanDistance(current_position, closest_corner)
+        current_position = closest_corner  # Move Pacman to that corner
+        remainingCorners.remove(closest_corner)  # Mark it as visited
+
+    return total_distance  # Return the total estimated distance
+
     return 0 # Default to trivial solution
 
 
