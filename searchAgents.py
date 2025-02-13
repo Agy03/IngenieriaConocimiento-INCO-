@@ -371,24 +371,46 @@ class CornersProblem(search.SearchProblem):
 
 
 
-def cornersHeuristic(state: Any, problem: CornersProblem):
+def cornersHeuristic(state: Any, problem: CornersProblem) -> int:
     """
-    A heuristic for the CornersProblem that you defined.
+    A heuristic for the CornersProblem.
 
-      state:   The current search state
-               (a data structure you chose in your search problem)
-
+      state:   The current search state, expected to be in the format
+               (current_position, visited_corners)
       problem: The CornersProblem instance for this layout.
 
-    This function should always return a number that is a lower bound on the
-    shortest path from the state to a goal of the problem; i.e.  it should be
+    This heuristic should always return a number that is a lower bound on the
+    shortest path from the state to a goal of the problem; i.e., it must be
     admissible.
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners = problem.corners  # List of all corner coordinates.
+    walls = problem.walls      # The maze's walls (provided as a Grid).
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # Unpack the state (assumes state is (current_position, visited_corners))
+    current_position, visited_corners = state
+
+    # Determine which corners have not been visited yet.
+    unvisited = [corner for corner in corners if corner not in visited_corners]
+
+    # If all corners have been visited, the heuristic is 0.
+    if not unvisited:
+        return 0
+
+    # Use a greedy approach: from the current position, repeatedly go to the nearest
+    # unvisited corner (using Manhattan distance), accumulate the total distance.
+    total_distance = 0
+    position = current_position
+
+    while unvisited:
+        # Compute Manhattan distances from the current position to each unvisited corner.
+        distances = [(abs(position[0] - corner[0]) + abs(position[1] - corner[1]), corner)
+                     for corner in unvisited]
+        min_distance, closest_corner = min(distances)
+        total_distance += min_distance
+        position = closest_corner
+        unvisited.remove(closest_corner)
+
+    return total_distance
 
 
 

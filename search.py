@@ -178,44 +178,33 @@ def nullHeuristic(state, problem=None) -> float:
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """
-    Search the node that has the lowest combined cost and heuristic first.
-    f(n) = g(n) + h(n)
-    where g(n) is the cost to reach the node and h(n) is the heuristic estimate.
+    A* Search: Encuentra un camino desde el estado inicial hasta un estado meta usando:
+      f(n) = g(n) + h(n), donde:
+        - g(n) es el costo acumulado hasta n.
+        - h(n) es una estimación admisible del costo restante.
+    
+    Esta función es genérica y se utiliza tanto para Q4 (problemas generales) como para Q6 
+    (CornersProblem), dependiendo de la heurística que se le pase.
     """
     from util import PriorityQueue
 
-    # Initialize the frontier using a PriorityQueue.
-    # Each element is a tuple: (state, path to state, accumulated cost)
     fringe = PriorityQueue()
-    
-    # Dictionary to track the best cost (g(n)) found so far for each state.
-    visited = {}
-    
+    visited_states = {}  # Almacena el menor costo (g(n)) alcanzado para cada estado.
     start = problem.getStartState()
     start_cost = 0
-    
-    # Push the start state into the queue with priority = g(n) + h(n)
     fringe.push((start, [], start_cost), start_cost + heuristic(start, problem))
     
     while not fringe.isEmpty():
         state, path, cost = fringe.pop()
-        
-        # If the current state is the goal, return the path to it.
         if problem.isGoalState(state):
             return path
-        
-        # Only expand the node if this path is cheaper than any previous one found for this state.
-        if state not in visited or cost < visited[state]:
-            visited[state] = cost
-            
-            # Expand the current node by iterating over its successors.
+        if state not in visited_states or cost < visited_states[state]:
+            visited_states[state] = cost
             for nextState, action, stepCost in problem.getSuccessors(state):
-                newCost = cost + stepCost               # g(n): cost to reach the successor
-                newPath = path + [action]               # update the path with the new action
-                priority = newCost + heuristic(nextState, problem)  # f(n): total estimated cost
-                
+                newCost = cost + stepCost
+                newPath = path + [action]
+                priority = newCost + heuristic(nextState, problem)
                 fringe.push((nextState, newPath, newCost), priority)
-    
     return []
 
 
