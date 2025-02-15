@@ -42,6 +42,7 @@ import util
 import time
 import search
 import pacman
+from search import breadthFirstSearch
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -580,8 +581,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return breadthFirstSearch(problem)
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -599,7 +600,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     """
 
     def __init__(self, gameState):
-        "Stores information from the gameState.  You don't need to change this."
         # Store the food for later reference
         self.food = gameState.getFood()
 
@@ -614,10 +614,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        x, y = state 
+        return self.food[x][y]
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
