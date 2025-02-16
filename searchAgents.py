@@ -43,6 +43,7 @@ import time
 import search
 import pacman
 from search import breadthFirstSearch
+from util import manhattanDistance
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -220,7 +221,7 @@ class PositionSearchProblem(search.SearchProblem):
         Returns the cost of a particular sequence of actions. If those actions
         include an illegal move, return 999999.
         """
-        if actions == None: return 999999
+        if actions is None: return 999999
         x,y= self.getStartState()
         cost = 0
         for action in actions:
@@ -299,19 +300,14 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
         return (self.startingPosition, frozenset())  # Pacman starts with no corners visited
-        util.raiseNotDefined()
-
+    
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
         position, visitedCorners = state  # Extract Pacman's position and visited corners
         return len(visitedCorners) == 4  # Goal reached when all four corners are visited
-
-        util.raiseNotDefined()
 
     def getSuccessors(self, state: Any):
         """
@@ -370,8 +366,6 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
-
-
 def cornersHeuristic(state: Any, problem: CornersProblem) -> int:
     """
     A heuristic for the CornersProblem.
@@ -387,8 +381,6 @@ def cornersHeuristic(state: Any, problem: CornersProblem) -> int:
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    from util import manhattanDistance
     position, visitedCorners = state  # Extract Pacman's position and visited corners
     remainingCorners = [corner for corner in problem.corners if corner not in visitedCorners]
 
@@ -408,10 +400,6 @@ def cornersHeuristic(state: Any, problem: CornersProblem) -> int:
         remainingCorners.remove(closest_corner)  # Mark it as visited
 
     return total_distance  # Return the total estimated distance
-
-    return 0 # Default to trivial solution
-
-
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -480,7 +468,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     Your heuristic for the FoodSearchProblem goes here.
 
     If using A* ever finds a solution that is worse uniform cost search finds,
-    your search may have a but our your heuristic is not admissible!  On the
+    your search may have a bug or your heuristic is not admissible!  On the
     other hand, inadmissible heuristics may find optimal solutions, so be careful.
 
     The state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid
@@ -549,10 +537,9 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     # Calculate the MST cost
     mst_cost = prim_mst(points)
 
-    # Return of the Minium spannig tree
+    # Return of the Minimum spanning tree
     return mst_cost
-
-
+    # Return the cost of the Minimum spanning tree
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
@@ -582,8 +569,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         return breadthFirstSearch(problem)
-
-
+    
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
     A search problem for finding a path to any food.

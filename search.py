@@ -20,7 +20,9 @@ Pacman agents (in searchAgents.py).
 import util
 from game import Directions
 from typing import List
-
+from util import Stack 
+from util import Queue
+from util import PriorityQueue
 
 class SearchProblem:
     """
@@ -64,9 +66,6 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-
-
-
 def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -90,8 +89,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    from util import Stack 
    
     fringe = Stack() # Stack for the search frontier
     visited = set() # Set of visitied nodes
@@ -115,12 +112,9 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     fringe.push((successor, new_path)) # Add it to the stack
 
     return []  # If no solution is found, return an empty list
-    util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    from util import Queue
 
     fringe = Queue()  # Queue to store states
     visited = set()  # Keep track of visited nodes
@@ -140,14 +134,10 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
                     fringe.push((nextState, path + [action]))  # Add new state
 
     return []  # No solution found
-    
-
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    from util import PriorityQueue
+
     fringe = PriorityQueue()  # Priority queue to store states
     visited = {}  # Dictionary to track the lowest cost to each state
     fringe.push((problem.getStartState(), [], 0), 0)  # Start state (position, path, cost)
@@ -167,7 +157,6 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
                 fringe.push((nextState, newPath, newCost), newCost)  # Add new state with priority
 
     return []  # No solution found
-    util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None) -> float:
     """
@@ -186,7 +175,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
     Esta función es genérica y se utiliza tanto para Q4 (problemas generales) como para Q6 
     (CornersProblem), dependiendo de la heurística que se le pase.
     """
-    from util import PriorityQueue
 
     fringe = PriorityQueue()
     visited_states = {}  # Almacena el menor costo (g(n)) alcanzado para cada estado.
@@ -206,7 +194,6 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
                 priority = newCost + heuristic(nextState, problem)
                 fringe.push((nextState, newPath, newCost), priority)
     return []
-
 
 # Abbreviations
 bfs = breadthFirstSearch
